@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: sealed-secrets
+
+resources:
+- 00-namespace.yaml
+- 10-controller.yaml
+- 20-scc.yaml
+- argocd-rbac.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: sealed-secrets
+  app.kubernetes.io/managed-by: argocd
