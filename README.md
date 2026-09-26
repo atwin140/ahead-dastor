@@ -18,7 +18,7 @@ Prerequisites:
 
 - An initial OpenShift GitOps installation is available on the hub to apply the bootstrap manifests.
 - Dastor is registered in Argo CD through the cluster-proxy addon.
-- Argo CD has access to `git@github.com:atwin140/ahead-dastor.git`.
+- Argo CD has access to `https://github.com/atwin140/ahead-dastor.git`.
 - The `cloudflare-api-token-secret` Secret exists in Dastor's `cert-manager` namespace with key `api-token`. Keep this credential out of Git.
 
 Apply once to the hub:

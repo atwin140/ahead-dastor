@@ -11,7 +11,7 @@ metadata:
 spec:
   description: Platform services managed for Dastor.
   sourceRepos:
-  - git@github.com:atwin140/ahead-dastor.git
+  - https://github.com/atwin140/ahead-dastor.git
   destinations:
   - namespace: "*"
     server: "*"
