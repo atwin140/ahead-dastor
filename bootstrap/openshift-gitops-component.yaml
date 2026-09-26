@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openshift-gitops-component
+  namespace: openshift-gitops
+  labels:
+    app.kubernetes.io/part-of: ahead-dastor
+    tier: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: platform-services
+  source:
+    repoURL: git@github.com:atwin140/ahead-dastor.git
+    targetRevision: HEAD
+    path: components/openshift-gitops/base
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: openshift-gitops
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - ServerSideApply=true
+    - SkipDryRunOnMissingResource=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
