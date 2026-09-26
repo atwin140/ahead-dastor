@@ -3,7 +3,7 @@ kind: ClusterRole
 metadata:
   name: argocd-sealed-secrets-manager
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "-1"
 rules:
 - apiGroups:
   - bitnami.com
@@ -31,7 +31,7 @@ kind: ClusterRoleBinding
 metadata:
   name: argocd-sealed-secrets-manager
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "-1"
 subjects:
 - kind: ServiceAccount
   name: openshift-gitops-argocd-application-controller
