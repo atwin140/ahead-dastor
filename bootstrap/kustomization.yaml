@@ -6,4 +6,5 @@ namespace: openshift-gitops
 resources:
 - cluster-onboarding-project.yaml
 - platform-services-project.yaml
+- openshift-gitops-component.yaml
 - app-of-apps.yaml
