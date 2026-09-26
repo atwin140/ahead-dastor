@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: dastor-devspaces
+  name: devspaces
   namespace: openshift-gitops
 spec:
   project: platform-services
@@ -15,4 +15,4 @@ spec:
   # Sync only after the operator CSVs succeed and the CheCluster CRD exists.
   syncPolicy:
     syncOptions:
-      - ServerSideApply=true
+    - ServerSideApply=true
