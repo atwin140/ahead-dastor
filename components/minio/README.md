@@ -17,7 +17,7 @@ This component deploys MinIO on the hub cluster and configures the `thanos-objec
 
 - Bucket: `observability-thanos`
 - Internal endpoint: `minio.minio.svc.cluster.local:9000`
-- Hub storage class: `synology-nfs-storage-pro`
+- Hub storage class: `synology-iscsi-storage`
 - Images: `quay.io/minio/minio:latest` and `quay.io/minio/mc:latest`
 
 ## Required follow-up
