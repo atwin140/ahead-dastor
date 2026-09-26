@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: cluster-onboarding
+  namespace: openshift-gitops
+  labels:
+    app.kubernetes.io/part-of: ahead-dastor
+    tier: app-of-apps
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  description: Manages per-cluster GitOps Applications in the hub.
+  sourceRepos:
+  - git@github.com:atwin140/ahead-dastor.git
+  destinations:
+  - namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  namespaceResourceWhitelist:
+  - group: argoproj.io
+    kind: Application
+  - group: argoproj.io
+    kind: AppProject
+  orphanedResources:
+    warn: true

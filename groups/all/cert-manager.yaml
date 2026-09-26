@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: openshift-gitops
+  labels:
+    app.kubernetes.io/part-of: ahead-dastor
+    component: cert-manager
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: platform-services
+  source:
+    repoURL: git@github.com:atwin140/ahead-dastor.git
+    targetRevision: HEAD
+    path: components/cert-manager/overlays/dastor
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: openshift-config
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - ServerSideApply=true
+    retry:
+      limit: 10
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 5m
+  revisionHistoryLimit: 10

@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: platform-services
+  namespace: openshift-gitops
+  labels:
+    app.kubernetes.io/part-of: ahead-dastor
+    tier: services
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  description: Platform services managed for Dastor.
+  sourceRepos:
+  - git@github.com:atwin140/ahead-dastor.git
+  destinations:
+  - namespace: "*"
+    server: "*"
+  clusterResourceWhitelist:
+  - group: "*"
+    kind: "*"
+  namespaceResourceWhitelist:
+  - group: "*"
+    kind: "*"
+  orphanedResources:
+    warn: true

@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cluster-onboarding
+  namespace: openshift-gitops
+  labels:
+    app.kubernetes.io/part-of: ahead-dastor
+    tier: app-of-apps
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+  - git:
+      repoURL: git@github.com:atwin140/ahead-dastor.git
+      revision: HEAD
+      directories:
+      - path: clusters/*
+  template:
+    metadata:
+      name: "{{path.basename}}-cluster-config"
+      namespace: openshift-gitops
+      labels:
+        app.kubernetes.io/part-of: ahead-dastor
+        cluster.name: "{{path.basename}}"
+      annotations:
+        argocd.argoproj.io/sync-wave: "1"
+    spec:
+      project: cluster-onboarding
+      source:
+        repoURL: git@github.com:atwin140/ahead-dastor.git
+        targetRevision: HEAD
+        path: "clusters/{{path.basename}}/apps"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: openshift-gitops
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=false
+        - ServerSideApply=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+      revisionHistoryLimit: 10
