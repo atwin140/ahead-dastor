@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dastor-devspaces-operator
+  namespace: openshift-gitops
+spec:
+  project: platform-services
+  source:
+    repoURL: https://github.com/atwin140/ahead-dastor.git
+    targetRevision: HEAD
+    path: components/devspaces/operator
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: openshift-operators
+  # Omitting automated keeps Argo CD sync manual.
+  syncPolicy:
+    syncOptions:
+      - ServerSideApply=true

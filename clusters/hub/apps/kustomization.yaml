@@ -6,6 +6,7 @@ namePrefix: dastor-
 
 resources:
 - ../../../groups/all
+- ../../../groups/sandbox
 
 patches:
 - path: patch-destination-server.yaml

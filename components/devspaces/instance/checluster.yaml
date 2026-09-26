@@ -1,0 +1,13 @@
+apiVersion: org.eclipse.che/v2
+kind: CheCluster
+metadata:
+  name: devspaces
+  namespace: openshift-devspaces
+spec:
+  # Use the operator's supported defaults for OAuth, ingress, and components.
+  components: {}
+  containerRegistry: {}
+  # Uses the cluster default StorageClass (synology-iscsi-storage at preparation).
+  devEnvironments: {}
+  gitServices: {}
+  networking: {}

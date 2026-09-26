@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dastor-devspaces
+  namespace: openshift-gitops
+spec:
+  project: platform-services
+  source:
+    repoURL: https://github.com/atwin140/ahead-dastor.git
+    targetRevision: HEAD
+    path: components/devspaces/instance
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: openshift-devspaces
+  # Sync only after the operator CSVs succeed and the CheCluster CRD exists.
+  syncPolicy:
+    syncOptions:
+      - ServerSideApply=true
