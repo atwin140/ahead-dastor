@@ -11,7 +11,7 @@ metadata:
 spec:
   description: Manages per-cluster GitOps Applications in the hub.
   sourceRepos:
-  - git@github.com:atwin140/ahead-dastor.git
+  - https://github.com/atwin140/ahead-dastor.git
   destinations:
   - namespace: openshift-gitops
     server: https://kubernetes.default.svc
