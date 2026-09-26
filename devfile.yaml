@@ -1,0 +1,30 @@
+schemaVersion: 2.2.0
+metadata:
+  name: andrews-toolkit-share
+attributes:
+  controller.devfile.io/storage-type: per-workspace
+  pod-overrides:
+    spec:
+      hostUsers: true
+components:
+  - name: tooling-container
+    container:
+      image: docker.io/andrewdarley/termtool:v26.07.29.4
+      memoryRequest: 1Gi
+      memoryLimit: 6Gi
+      cpuRequest: 1000m
+      cpuLimit: 4000m
+      mountSources: true
+      env:
+        - name: HOME
+          value: /projects
+      command:
+        - tail
+      args:
+        - '-f'
+        - /dev/null
+projects:
+  - name: ahead-dastor
+    git:
+      remotes:
+        origin: https://github.com/atwin140/ahead-dastor.git

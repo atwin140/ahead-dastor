@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- namespace.yaml
+- minio-serviceaccount.yaml
+- minio-anyuid.yaml
+- minio-credentials-sealed.yaml
+- thanos-object-storage-sealed.yaml
+- minio-pvc.yaml
+- minio-deployment.yaml
+- minio-service.yaml
+- minio-route.yaml
+- minio-bucket-job.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: minio
+  app.kubernetes.io/managed-by: argocd
