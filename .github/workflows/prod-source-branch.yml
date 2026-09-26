@@ -1,0 +1,28 @@
+name: Prod source branch
+
+on:
+  pull_request:
+    branches:
+    - prod
+    types:
+    - opened
+    - reopened
+    - synchronize
+    - edited
+
+permissions: {}
+
+jobs:
+  prod-source-branch:
+    name: prod-source-branch
+    runs-on: ubuntu-latest
+    steps:
+    - name: Require main as the pull request source
+      env:
+        HEAD_REF: ${{ github.head_ref }}
+      run: |
+        if [ "$HEAD_REF" != "main" ]; then
+          echo "::error::Pull requests into prod must come from main (received '$HEAD_REF')."
+          exit 1
+        fi
+        echo "Pull request source is main."
