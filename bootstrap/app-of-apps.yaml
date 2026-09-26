@@ -11,8 +11,8 @@ spec:
     preserveResourcesOnDeletion: true
   generators:
   - git:
-      repoURL: git@github.com:atwin140/ahead-dastor.git
-      revision: HEAD
+      repoURL: https://github.com/atwin140/ahead-dastor.git
+      revision: sandbox
       directories:
       - path: clusters/*
   template:
@@ -27,8 +27,8 @@ spec:
     spec:
       project: cluster-onboarding
       source:
-        repoURL: git@github.com:atwin140/ahead-dastor.git
-        targetRevision: HEAD
+        repoURL: https://github.com/atwin140/ahead-dastor.git
+        targetRevision: sandbox
         path: "clusters/{{path.basename}}/apps"
       destination:
         server: https://kubernetes.default.svc
