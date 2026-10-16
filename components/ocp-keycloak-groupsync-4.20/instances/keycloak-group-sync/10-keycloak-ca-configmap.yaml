@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-certs
+  namespace: group-sync-operator
+data:
+  ca.crt: POPULATE_USING_BOOTSTRAP_HELPER

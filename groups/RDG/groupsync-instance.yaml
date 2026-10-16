@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dastor-groupsync
+  namespace: openshift-gitops
+spec:
+  project: platform-services
+  source:
+    repoURL: https://github.com/atwin140/ahead-dastor.git
+    targetRevision: RDG
+    path: components/ocp-keycloak-groupsync-4.20/instances/keycloak-group-sync
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: group-sync-operator
+  syncPolicy:
+    syncOptions:
+    - ServerSideApply=true

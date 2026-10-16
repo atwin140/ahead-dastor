@@ -1,0 +1,25 @@
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: GroupSync
+metadata:
+  name: dastor-keycloak-groupsync
+  namespace: group-sync-operator
+spec:
+  providers:
+  - name: dastor-keycloak
+    keycloak:
+      url: https://keycloak.apps.dstr-rdg-opnsft.dastorllc.com
+      realm: openshift
+      loginRealm: openshift
+      scope: sub
+      prune: false
+      credentialsSecret:
+        name: keycloak-group-sync
+        namespace: group-sync-operator
+      ca:
+        kind: ConfigMap
+        name: keycloak-certs
+        namespace: group-sync-operator
+        key: ca.crt
+      groups:
+      - openshift-access
+      insecure: false

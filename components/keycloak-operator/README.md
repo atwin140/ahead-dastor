@@ -1,8 +1,9 @@
 # DaSTOR Keycloak
 
 Prepared October 16, 2026 from the existing Keycloak operator component for the
-DaSTOR RDG cluster. The deployment files are ready for GitOps review; they have
-not been applied to the cluster.
+DaSTOR RDG cluster. Manually deployed on October 16, 2026, with the operator,
+PostgreSQL, Keycloak and realm import verified healthy. The Argo CD Applications
+have been prepared for repository deployment but have not been registered.
 
 ## Cluster-specific settings
 
@@ -153,9 +154,16 @@ oc kustomize groups/RDG
 These commands render locally. All four builds passed during preparation.
 The custom resources were also checked against the official Keycloak 26.4.0
 CRD schemas. This is structural validation, not a deployment or runtime test.
-The secret helper passed syntax and mocked behavior checks; it was not run
-against the live cluster. Runtime readiness, image access, volume permissions,
-realm import, backup/restore and OIDC login remain deployment checks.
+The secret helper passed syntax and mocked behavior checks and was then run
+against DaSTOR to generate fresh credentials. The operator CSV reached Succeeded;
+PostgreSQL and Keycloak reached Ready; both PowerStore PVCs bound; the realm
+import reached Done. A manual backup job completed successfully after database
+readiness. The public realm discovery endpoint, exact client callback and imported
+client-secret equality were verified through the Keycloak API using an explicit
+trust file for the existing self-signed ingress certificate. Passwords and client
+secrets were not printed. Restore testing and end-user OIDC login remain untested;
+OpenShift OAuth has not been modified. The initial backup check started during
+database initialization and failed; it was removed after a fresh check succeeded.
 
 After deploying:
 

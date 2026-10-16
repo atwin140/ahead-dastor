@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dastor-keycloak-realm
+  namespace: openshift-gitops
+spec:
+  project: platform-services
+  source:
+    repoURL: https://github.com/atwin140/ahead-dastor.git
+    targetRevision: sandbox
+    path: components/keycloak-operator/overlays/dastor-realm-config
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: keycloak
+  syncPolicy:
+    syncOptions:
+    - ServerSideApply=true

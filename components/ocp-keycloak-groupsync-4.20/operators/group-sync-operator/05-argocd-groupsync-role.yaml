@@ -1,0 +1,48 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argocd-groupsync-manager
+  namespace: group-sync-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: '0'
+rules:
+- apiGroups:
+  - redhatcop.redhat.io
+  resources:
+  - groupsyncs
+  - groupsyncs/status
+  - groupsyncs/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - operators.coreos.com
+  resources:
+  - subscriptions
+  - operatorgroups
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
