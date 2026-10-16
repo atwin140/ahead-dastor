@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: godaddy-test
+  namespace: default
+spec:
+  secretName: godaddy-test-tls
+  dnsNames:
+    - "test.dastorllc.com"
+  issuerRef:
+    name: godaddy-acme
+    kind: ClusterIssuer
+    group: cert-manager.io
+ 

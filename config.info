@@ -1,0 +1,69 @@
+
+
+
+
+ wget -O discovery_image_dstr-rdg-opnsft-01.iso 'https://api.openshift.com/api/assisted-images/bytoken/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3OTA5ODQxNTcsInN1YiI6IjgyNzg1YzE3LTBiMDMtNGEyYS05MmU3LTMxZTE1ZTUzYTAxMiJ9.qzOZRlSjnMjYAU3ZVcoqEeeR71W88YbSedjDF1dLPdc/4.22/x86_64/minimal.iso'
+
+dstr-rdg-opnsft-
+
+
+andrew.darley@ahead.com G8(KNU@Fw)
+
+vmdisconnect
+
+
+root     )3Ui&kjHBYAu
+ 
+ 
+RDG iDRAC IPs
+ 
+10.200.202.32/24
+Controller 3 MGMT
+10.200.202.31/24
+Controller 2 MGMT
+10.200.202.30/24
+Controller 1 MGMT
+ 
+10.200.202.43/24
+Node 4 MGMT
+10.200.202.42/24
+Node 3 MGMT
+10.200.202.41/24
+Node 2 MGMT
+10.200.202.40/24
+Node 1 MGMT
+ 
+ILG iDRAC IPs
+ 
+10.100.202.32/24
+Controller 3 MGMT
+10.100.202.31/24
+Controller 2 MGMT
+10.100.202.30/24
+Controller 1 MGMT
+ 
+10.100.202.43/24
+Node 4 MGMT
+10.100.202.42/24
+Node 3 MGMT
+10.100.202.41/24
+Node 2 MGMT
+10.100.202.40/24
+Node 1 MGMT
+ 
+ 
+API ingress 10.200.205.9
+App ingress 10.200.205.10
+Subnet 10.200.205.0/24
+Vlan 205
+Set it up with bonded
+Use rr0 not active backup
+Here are the MAC address
+cp1 34:D8:68:84:BC:E0 34:D8:68:84:BC:E1 10.200.205.11
+cp2 34:D8:68:91:BB:C0 34:D8:68:91:BB:C1 10.200.205.12
+cp3 34:D8:68:90:20:F0 34:D8:68:90:20:F1 10.200.205.13
+
+wk1 6C:83:75:FA:FB:30 6C:83:75:FB:8F:71 10.200.205.21
+wk2 6C:83:75:FA:BB:60 6C:83:75:FA:FB:20 10.200.205.22
+wk3 6C:83:75:FA:F7:90 6C:83:75:FC:46:90 10.200.205.23
+wk4 

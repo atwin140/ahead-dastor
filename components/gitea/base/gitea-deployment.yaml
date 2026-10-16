@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea
+  namespace: gitea
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: gitea
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: gitea
+    spec:
+      serviceAccountName: gitea
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: gitea
+        image: docker.io/gitea/gitea:1.22.6-rootless
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 3000
+        - name: ssh
+          containerPort: 2222
+        env:
+        - name: USER_UID
+          value: "1000"
+        - name: USER_GID
+          value: "1000"
+        - name: GITEA__database__DB_TYPE
+          value: sqlite3
+        - name: GITEA__database__PATH
+          value: /data/gitea/gitea.db
+        - name: GITEA__security__INSTALL_LOCK
+          value: "true"
+        - name: GITEA__service__DISABLE_REGISTRATION
+          value: "true"
+        - name: GITEA__service__ALLOW_ONLY_EXTERNAL_REGISTRATION
+          value: "false"
+        - name: GITEA__service__REQUIRE_SIGNIN_VIEW
+          value: "true"
+        - name: GITEA__service__DEFAULT_KEEP_EMAIL_PRIVATE
+          value: "true"
+        volumeMounts:
+        - name: gitea-data
+          mountPath: /data
+        readinessProbe:
+          httpGet:
+            path: /api/healthz
+            port: http
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /api/healthz
+            port: http
+          initialDelaySeconds: 60
+          periodSeconds: 20
+      volumes:
+      - name: gitea-data
+        persistentVolumeClaim:
+          claimName: gitea-data

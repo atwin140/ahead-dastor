@@ -7,9 +7,9 @@ metadata:
     argocd.argoproj.io/sync-wave: "5"
 spec:
   dnsNames:
-  - '*.apps.dastor.sharkbait.tech'
-  - apps.dastor.sharkbait.tech
+  - '*.apps.dstr-rdg-opnsft.dastorllc.com'
+  - 'apps.dstr-rdg-opnsft.dastorllc.com'
   issuerRef:
     kind: ClusterIssuer
-    name: letsencrypt-prod
+    name: acme-godaddy-letsencrypt
   secretName: cluster-wildcard-tls

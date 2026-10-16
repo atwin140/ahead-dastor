@@ -1,0 +1,30 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-manager-godaddy-webhook
+rules:
+  - apiGroups:
+      - acme.godaddy.com
+    resources:
+      - godaddy
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-manager-godaddy-webhook
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-manager-godaddy-webhook
+subjects:
+  - kind: ServiceAccount
+    name: cert-manager
+    namespace: cert-manager

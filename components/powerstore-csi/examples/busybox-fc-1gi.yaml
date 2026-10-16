@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: powerstore-fc-busybox
+  namespace: powerstore
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  storageClassName: powerstore-fc
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: powerstore-fc-busybox
+  namespace: powerstore
+spec:
+  restartPolicy: Never
+  containers:
+    - name: busybox
+      image: busybox:1.36
+      command: ["/bin/sh", "-ec"]
+      args:
+        - |
+          mkdir -p /data
+          echo "PowerStore FC busybox test" > /data/test.txt
+          df -h /data
+          ls -l /data
+          echo "attached and writable"
+          sleep 3600
+      volumeMounts:
+        - name: data
+          mountPath: /data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: powerstore-fc-busybox

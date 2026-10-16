@@ -1,0 +1,29 @@
+{
+  "nodes": [],
+  "errors": [
+    {
+      "node": "dastor-cp-01",
+      "error": "Command failed: oc debug node/dastor-cp-01 -- chroot\nTemporary namespace openshift-debug-pmvfx is created for debugging node...\nStarting pod/dastor-cp-01-debug-r6dh9 ...\nTo use host binaries, run `chroot /host`. Instead, if you need to access host namespaces, run `nsenter -a -t 1`.\n\nRemoving debug pod ...\nTemporary namespace openshift-debug-pmvfx was removed.\nerror: non-zero exit code from debug container\n"
+    },
+    {
+      "node": "dastor-cp-02",
+      "error": "Command failed: oc debug node/dastor-cp-02 -- chroot\nTemporary namespace openshift-debug-rm6vs is created for debugging node...\nStarting pod/dastor-cp-02-debug-d957w ...\nTo use host binaries, run `chroot /host`. Instead, if you need to access host namespaces, run `nsenter -a -t 1`.\n\nRemoving debug pod ...\nTemporary namespace openshift-debug-rm6vs was removed.\nerror: non-zero exit code from debug container\n"
+    },
+    {
+      "node": "dastor-cp-03",
+      "error": "Command failed: oc debug node/dastor-cp-03 -- chroot\nTemporary namespace openshift-debug-szrts is created for debugging node...\nStarting pod/dastor-cp-03-debug-l5vnq ...\nTo use host binaries, run `chroot /host`. Instead, if you need to access host namespaces, run `nsenter -a -t 1`.\n\nRemoving debug pod ...\nTemporary namespace openshift-debug-szrts was removed.\nerror: non-zero exit code from debug container\n"
+    },
+    {
+      "node": "dastor-wk-01",
+      "error": "Command failed: oc debug node/dastor-wk-01 -- chroot\nTemporary namespace openshift-debug-6lgkt is created for debugging node...\nStarting pod/dastor-wk-01-debug-sjd6m ...\nTo use host binaries, run `chroot /host`. Instead, if you need to access host namespaces, run `nsenter -a -t 1`.\n\nRemoving debug pod ...\nTemporary namespace openshift-debug-6lgkt was removed.\nerror: non-zero exit code from debug container\n"
+    },
+    {
+      "node": "dastor-wk-02",
+      "error": "Command failed: oc debug node/dastor-wk-02 -- chroot\nTemporary namespace openshift-debug-t8wwt is created for debugging node...\nStarting pod/dastor-wk-02-debug-vqlgc ...\nTo use host binaries, run `chroot /host`. Instead, if you need to access host namespaces, run `nsenter -a -t 1`.\n\nRemoving debug pod ...\nTemporary namespace openshift-debug-t8wwt was removed.\nerror: non-zero exit code from debug container\n"
+    },
+    {
+      "node": "dastor-wk-03",
+      "error": "Command failed: oc debug node/dastor-wk-03 -- chroot\nTemporary namespace openshift-debug-9jcfk is created for debugging node...\nStarting pod/dastor-wk-03-debug-fpppj ...\nTo use host binaries, run `chroot /host`. Instead, if you need to access host namespaces, run `nsenter -a -t 1`.\n\nRemoving debug pod ...\nTemporary namespace openshift-debug-9jcfk was removed.\nerror: non-zero exit code from debug container\n"
+    }
+  ]
+}

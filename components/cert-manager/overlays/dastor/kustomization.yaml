@@ -8,6 +8,8 @@ commonAnnotations:
 resources:
 - ../../base
 - certmanager-config.yaml
+- godaddy-webhook-install.yaml
+- godaddy-webhook-rbac.yaml
 - clusterissuer-letsencrypt-prod.yaml
 - certificate-wildcard.yaml
 - patch-ingress-tls.yaml

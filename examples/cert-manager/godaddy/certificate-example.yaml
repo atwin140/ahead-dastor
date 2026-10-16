@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: godaddy-example-cert
+  namespace: default
+spec:
+  secretName: godaddy-example-cert-tls
+  dnsNames:
+    - example.dastorllc.com
+  issuerRef:
+    name: godaddy-acme
+    kind: ClusterIssuer
+    group: cert-manager.io

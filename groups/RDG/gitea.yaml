@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitea
+  namespace: openshift-gitops
+  labels:
+    app.kubernetes.io/part-of: ahead-dastor
+    component: gitea
+spec:
+  project: platform-services
+  source:
+    repoURL: https://github.com/atwin140/ahead-dastor.git
+    targetRevision: HEAD
+    path: components/gitea/base
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gitea
+  syncPolicy:
+    syncOptions:
+    - ServerSideApply=true

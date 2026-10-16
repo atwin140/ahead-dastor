@@ -1,0 +1,26 @@
+# This matches the GoDaddy secret format you created:
+#   Secret: godaddy-dns-credentials
+#   key: token
+#   value: "API_KEY:API_SECRET"
+#
+# Prerequisite: install the GoDaddy DNS webhook/solver for cert-manager.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: godaddy-acme
+spec:
+  acme:
+    email: mMullaly@dastorllc.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: godaddy-acme-key
+    solvers:
+      - selector: {}
+        dns01:
+          webhook:
+            groupName: acme.godaddy.com
+            solverName: godaddy
+            config:
+              apiTokenSecretRef:
+                name: godaddy-dns-credentials
+                key: token

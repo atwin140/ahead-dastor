@@ -1,0 +1,13 @@
+# Apply only if NFS is also needed and the NAS server is reachable from nodes.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: powerstore-nfs
+provisioner: csi-powerstore.dellemc.com
+parameters:
+  csi.storage.k8s.io/fstype: nfs
+  # nasName and nfsAcls are inherited from the default array in the Secret.
+  allowRoot: "false"
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+volumeBindingMode: Immediate

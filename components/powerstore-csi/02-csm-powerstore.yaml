@@ -1,0 +1,19 @@
+# This cluster already has the Dell CSM certified operator v1.13.1 installed,
+# so we align the PowerStore module version to the same compatible release.
+# spec.version is a CSM bundle release, not a CSI driver or Operator version.
+apiVersion: storage.dell.com/v1
+kind: ContainerStorageModule
+metadata:
+  name: powerstore
+  namespace: powerstore
+spec:
+  version: "v1.13.1"
+  driver:
+    csiDriverType: powerstore
+    authSecret: powerstore-config
+    replicas: 2
+    forceRemoveDriver: false
+    dnsPolicy: ClusterFirstWithHostNet
+    csiDriverSpec:
+      fSGroupPolicy: ReadWriteOnceWithFSType
+      storageCapacity: true

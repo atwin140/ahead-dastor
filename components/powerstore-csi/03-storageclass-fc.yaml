@@ -1,0 +1,11 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: powerstore-fc
+provisioner: csi-powerstore.dellemc.com
+parameters:
+  # Omitting arrayID selects the array marked isDefault in powerstore-config.
+  csi.storage.k8s.io/fstype: xfs
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: Immediate

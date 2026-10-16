@@ -1,0 +1,23 @@
+# Review before applying: replaces /etc/multipath.conf on worker nodes.
+# MachineConfig rollout can drain and reboot nodes.
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  name: 99-worker-powerstore-multipath
+  labels:
+    machineconfiguration.openshift.io/role: worker
+spec:
+  config:
+    ignition:
+      version: 3.4.0
+    storage:
+      files:
+        - path: /etc/multipath.conf
+          mode: 420
+          overwrite: true
+          contents:
+            source: data:text/plain;charset=utf-8;base64,ZGVmYXVsdHMgewogICAgcG9sbGluZ19pbnRlcnZhbCA1CiAgICBjaGVja2VyX3RpbWVvdXQgMTUKICAgIGRpc2FibGVfY2hhbmdlZF93d2lkcyB5ZXMKICAgIGZpbmRfbXVsdGlwYXRocyBubwp9CmRldmljZXMgewogICAgZGV2aWNlIHsKICAgICAgICB2ZW5kb3IgRGVsbEVNQwogICAgICAgIHByb2R1Y3QgUG93ZXJTdG9yZQogICAgICAgIGRldGVjdF9wcmlvIHllcwogICAgICAgIHBhdGhfc2VsZWN0b3IgInF1ZXVlLWxlbmd0aCAwIgogICAgICAgIHBhdGhfZ3JvdXBpbmdfcG9saWN5IGdyb3VwX2J5X3ByaW8KICAgICAgICBwYXRoX2NoZWNrZXIgdHVyCiAgICAgICAgZmFpbGJhY2sgaW1tZWRpYXRlCiAgICAgICAgZmFzdF9pb19mYWlsX3RtbyA1CiAgICAgICAgbm9fcGF0aF9yZXRyeSAzCiAgICAgICAgcnJfbWluX2lvX3JxIDEKICAgICAgICBtYXhfc2VjdG9yc19rYiAxMDI0CiAgICAgICAgZGV2X2xvc3NfdG1vIDEwCiAgICB9Cn0K
+    systemd:
+      units:
+        - name: multipathd.service
+          enabled: true

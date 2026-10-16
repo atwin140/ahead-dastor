@@ -1,0 +1,104 @@
+PowerStore CSI configuration for OpenShift 4.22.16
+
+Status: templates created; nothing has been applied to a cluster.
+Method: Dell Container Storage Modules Operator.
+
+Before installation
+
+1. Confirm a Dell-supported CSM / Operator / PowerStore OS combination for
+   OCP 4.22.16. The CSM 1.17 support matrix found during preparation lists
+   OCP 4.18-4.21. Compatibility with 4.22.16 remains unverified.
+   Set spec.version in 02-csm-powerstore.yaml to the compatible CSM bundle
+   release (vX.Y.Z). Do not substitute an Operator or CSI driver version.
+   This manifest uses the CSM 1.16+ automatic image selection layout.
+2. If absent, install Dell Container Storage Modules from OperatorHub using
+   the compatible release. Wait for its CSV to show Succeeded and confirm:
+     oc get csv -n openshift-operators
+     oc get crd containerstoragemodules.storage.dell.com
+   Operator-managed RBAC and SCC resources are supplied by the Operator.
+3. Edit 01-secret.yaml locally: replace ###### with the actual globalID.
+   The supplied admin credentials are populated. Confirm AAAAAAAAAA is the
+   NAS name if using NFS. Keep this Secret and ZIP bundle private; both
+   contain the password in plaintext. Keep them out of source control.
+   The Secret's stringData.config contains your original arrays structure.
+   skipCertificateValidation: true disables management TLS verification,
+   as requested. nfsAcls: "0777" applies to NFS, not FC XFS volumes.
+4. Verify worker FC HBAs, SAN zoning, logged-in initiators, and multipath.
+   Nodes need DNS resolution and HTTPS access to DSTR-ILG-DELLPS-SAN01;
+   FC data uses the SAN.
+   For NFS, nodes additionally need connectivity to the NAS data interface.
+
+Worker multipath (only when not already configured)
+
+Review optional/multipath.conf against existing storage requirements first.
+The matching MachineConfig replaces /etc/multipath.conf and enables
+multipathd on the worker pool; applying it can drain/reboot worker nodes.
+If multipath.conf needs edits, regenerate the MachineConfig's base64 source.
+Do not apply this example unchanged to mixed-storage or custom node pools.
+
+  oc apply --dry-run=server -f optional/99-worker-powerstore-multipath.yaml
+  oc apply -f optional/99-worker-powerstore-multipath.yaml
+  oc get mcp worker -w
+
+Wait for the rollout to complete: all workers updated and ready, with
+Updating=False and Degraded=False. Verify multipathd on the target workers.
+
+Install (run from this directory after completing the checks above)
+
+  oc apply -f 00-namespace.yaml
+  oc apply -f 01-secret.yaml
+  oc apply --dry-run=server -f 02-csm-powerstore.yaml
+  oc apply -f 02-csm-powerstore.yaml
+  oc get csm powerstore -n powerstore -o yaml
+  oc get pods -n powerstore -o wide
+
+Wait for successful CSM reconciliation and healthy controller/node pods.
+
+  oc get csidriver csi-powerstore.dellemc.com
+  oc apply -f 03-storageclass-fc.yaml
+
+powerstore-fc uses XFS over your configured FC transport. It relies on the
+Secret's default array. isDefault selects an array inside the driver; it
+does not make this the cluster's default StorageClass. This bundle does not
+mark any StorageClass as the cluster default.
+
+Optional resources (apply individually when needed)
+
+  oc apply -f optional/storageclass-nfs.yaml
+  oc apply -f optional/volumesnapshotclass.yaml
+
+NFS uses the same driver and inherits nasName/nfsAcls from the array Secret.
+Snapshots require the snapshot API/controller supplied by your platform.
+No replication, resiliency, or observability modules are enabled here.
+
+FC write/read check
+
+  oc apply -f examples/fc-smoke-test.yaml
+  oc get pvc,pod -n powerstore -w
+  oc logs -n powerstore powerstore-fc-test
+
+The FC claim may stay Pending until its consumer Pod is scheduled because
+the StorageClass uses WaitForFirstConsumer. Expected log output:
+  PowerStore FC write/read test
+
+If provisioning or mounting fails:
+  oc describe pvc -n powerstore powerstore-fc-test
+  oc describe pod -n powerstore powerstore-fc-test
+  oc get events -n powerstore --sort-by=.lastTimestamp
+
+Both StorageClasses and the snapshot class use Retain. Deleting claims or
+snapshots leaves backing storage for explicit administrative cleanup.
+To remove the smoke-test Kubernetes objects:
+  oc delete -f examples/fc-smoke-test.yaml
+Record the PV/volume before cleanup; its retained storage remains allocated.
+
+References
+
+Dell OpenShift PowerStore installation:
+https://dell.github.io/csm-docs/docs/getting-started/installation/openshift/powerstore/csmoperator/
+Dell CSM 1.17 orchestrator support matrix:
+https://www.dell.com/support/manuals/en-in/container-storage-modules/csm_support_matrix/container-orchestrator-platforms?guid=guid-697421e3-6be0-4ae6-9f80-9209273f18cf&lang=en-us
+Dell Operator sample:
+https://github.com/dell/csm-operator/blob/release/v1.11.3/samples/v2.16.0/storage_csm_powerstore_v2160.yaml
+Dell StorageClass samples:
+https://github.com/dell/csi-powerstore/tree/main/samples/storageclass

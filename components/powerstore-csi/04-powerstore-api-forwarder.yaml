@@ -1,0 +1,128 @@
+# PowerStore API forwarder for a secondary management network.
+#
+# Required network behavior:
+#   - OpenShift must be using Multus so the pod can attach a second interface.
+#   - The VLAN/physical NIC behind the secondary network must be connected to the
+#     PowerStore management network.
+#   - The pod does not need to use the array's IP directly; it can use a free IP on
+#     the same subnet such as 10.200.202.101/24 and then forward to the management
+#     endpoint at 10.200.202.100.
+#
+# Adjust the following values before applying:
+#   - master: the actual VLAN device on the worker node, not a nonexistent NIC.
+#     For VLAN 202 the host must expose an interface such as bond0.202 or ens3.202.
+#     The current cluster node shows bond0.205 exists, but VLAN 202 is not present yet.
+#   - gateway: the network gateway for the management subnet
+#   - pod IP: the static address assigned to the secondary interface (use a free IP)
+#   - target API: the real PowerStore management endpoint (10.200.202.100 in this example)
+#     A VLAN-backed attachment is used because the requested network is on VLAN 202.
+#
+# Example:
+#   oc apply -f 04-powerstore-api-forwarder.yaml
+#   oc get pod -n powerstore -l app=powerstore-api-forwarder -o wide
+#   oc get svc -n powerstore powerstore-api-forwarder
+#   oc get route -n powerstore powerstore-api-forwarder
+
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: powerstore-mgmt
+  namespace: powerstore
+spec:
+  config: |
+    {
+      "cniVersion": "0.3.1",
+      "name": "powerstore-mgmt",
+      "type": "vlan",
+      "master": "bond0.202",
+      "vlanId": 202,
+      "ipam": {
+        "type": "static",
+        "addresses": [
+          {
+            "address": "10.200.202.101/24",
+            "gateway": "10.200.202.1"
+          }
+        ],
+        "routes": [
+          {
+            "dst": "10.200.202.0/24",
+            "gw": "10.200.202.1"
+          }
+        ]
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: powerstore-api-forwarder
+  namespace: powerstore
+  labels:
+    app: powerstore-api-forwarder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: powerstore-api-forwarder
+  template:
+    metadata:
+      labels:
+        app: powerstore-api-forwarder
+      annotations:
+        k8s.v1.cni.cncf.io/networks: powerstore-mgmt
+    spec:
+      containers:
+        - name: api-forwarder
+          image: alpine/socat:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              echo "Forwarding 0.0.0.0:443 to PowerStore API at 10.200.202.100:443";
+              socat -d -d TCP4-LISTEN:443,fork,reuseaddr TCP4:10.200.202.100:443
+          ports:
+            - name: https
+              containerPort: 443
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: false
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: powerstore-api-forwarder
+  namespace: powerstore
+  labels:
+    app: powerstore-api-forwarder
+spec:
+  selector:
+    app: powerstore-api-forwarder
+  ports:
+    - name: https
+      port: 443
+      targetPort: 443
+      protocol: TCP
+  type: ClusterIP
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: powerstore-api-forwarder
+  namespace: powerstore
+  labels:
+    app: powerstore-api-forwarder
+spec:
+  to:
+    kind: Service
+    name: powerstore-api-forwarder
+  port:
+    targetPort: https
+  tls:
+    termination: passthrough

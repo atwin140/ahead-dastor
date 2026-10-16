@@ -19,7 +19,7 @@ Prerequisites:
 - An initial OpenShift GitOps installation is available on the hub to apply the bootstrap manifests.
 - Dastor is registered in Argo CD through the cluster-proxy addon.
 - Argo CD has access to `https://github.com/atwin140/ahead-dastor.git`.
-- The `cloudflare-api-token-secret` Secret exists in Dastor's `cert-manager` namespace with key `api-token`. Keep this credential out of Git.
+- The `godaddy-dns-credentials` Secret exists in Dastor's `cert-manager` namespace with key `token` and value `API_KEY:API_SECRET`. Keep this credential out of Git.
 
 Apply once to the hub:
 
@@ -31,7 +31,7 @@ Bootstrap creates an Argo CD Application pointing to `components/openshift-gitop
 
 ## Certificate setup
 
-The cert-manager Dastor overlay includes the CertManager controller configuration that forces DNS-01 propagation checks through public recursive resolvers (`1.1.1.1:53` and `8.8.8.8:53`). Sync waves install the operator subscription before applying this custom resource. Argo CD retries failed syncs while the operator establishes its CRDs.
+The cert-manager Dastor overlay installs the GoDaddy cert-manager webhook and configures the `letsencrypt-prod` `ClusterIssuer` to solve DNS-01 challenges through `acme.godaddy.com`. The overlay also includes CertManager controller configuration that forces DNS-01 propagation checks through public recursive resolvers (`1.1.1.1:53` and `8.8.8.8:53`). Sync waves install the operator subscription before applying this custom resource. Argo CD retries failed syncs while the operator establishes its CRDs.
 
 Verify on Dastor:
 
