@@ -1,0 +1,40 @@
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: dastor-keycloak
+  namespace: keycloak
+  annotations:
+    argocd.argoproj.io/sync-wave: '3'
+spec:
+  instances: 1
+  ingress:
+    enabled: false
+  http:
+    httpEnabled: true
+  hostname:
+    hostname: https://keycloak.apps.dstr-rdg-opnsft.dastorllc.com
+    strict: true
+  networkPolicy:
+    enabled: true
+  db:
+    vendor: postgres
+    host: keycloak-postgresql
+    port: 5432
+    database: keycloak
+    usernameSecret:
+      name: keycloak-db-secret
+      key: username
+    passwordSecret:
+      name: keycloak-db-secret
+      key: password
+  additionalOptions:
+  - name: metrics-enabled
+    value: 'true'
+  proxy:
+    headers: xforwarded
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      memory: 2Gi

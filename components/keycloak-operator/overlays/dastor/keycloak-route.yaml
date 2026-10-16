@@ -1,0 +1,20 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: dastor-keycloak
+  namespace: keycloak
+  annotations:
+    argocd.argoproj.io/sync-wave: '4'
+    haproxy.router.openshift.io/set-forwarded-headers: replace
+spec:
+  host: keycloak.apps.dstr-rdg-opnsft.dastorllc.com
+  to:
+    kind: Service
+    name: dastor-keycloak-service
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
