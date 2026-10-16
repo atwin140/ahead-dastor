@@ -7,7 +7,7 @@ spec:
   project: platform-services
   source:
     repoURL: https://github.com/atwin140/ahead-dastor.git
-    targetRevision: RDG
+    targetRevision: sandbox
     path: components/ocp-keycloak-groupsync-4.20/operators/group-sync-operator
   destination:
     server: https://kubernetes.default.svc

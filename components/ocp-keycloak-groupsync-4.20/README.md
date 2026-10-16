@@ -77,9 +77,10 @@ OAuth, create OpenShift user identities or grant roles by itself. OpenShift OIDC
 must use `preferred_username` to align with the usernames produced by this
 provider. The prepared Keycloak OIDC client is `dastor-openshift`.
 
-`30-cluster-admin-binding.yaml` is an optional, excluded manifest binding the
-short group name `cluster-admins` to `cluster-admin`. It is not part of the normal
-deployment. Apply it only when that access has explicitly been requested.
+`30-cluster-admin-binding.yaml` is included in the instance Kustomization and
+binds the OpenShift group `cluster-admins` to `cluster-admin`. This access was
+explicitly authorized and applied on RDG on October 16, 2026. All members of this
+group receive cluster administrator access.
 Group names must match the actual synchronized names; slash-delimited Keycloak
 paths are not valid OpenShift group names.
 
@@ -100,8 +101,9 @@ rerunning bootstrap intentionally preserves an existing password.
 ## GitOps
 
 The repository's `groups/RDG` contains separate `dastor-groupsync-operator` and
-`dastor-groupsync` Applications. They use `platform-services`, the RDG branch and
-manual sync. Commit and push before registering those Applications. The instance
+`dastor-groupsync` Applications. The group-sync Applications use `platform-services`, the `sandbox` branch and
+manual sync. `RDG` is the cluster directory; no remote `RDG` branch existed when
+this change was published. Commit and push before registering those Applications. The instance
 Application depends on runtime credentials and trust being provisioned first.
 Manual deployment does not register or sync Applications automatically.
 
@@ -112,21 +114,49 @@ Manual deployment does not register or sync Applications automatically.
 
 ## Verified deployment result
 
-- CSV `group-sync-operator.v0.0.36`: Succeeded.
-- Operator pod: 2/2 Ready.
-- GroupSync: `ReconcileSuccess=True`, reason `LastReconcileCycleSucceded`.
-- Successful synchronization verified at 2026-10-16T16:34:18Z.
-- OpenShift group `openshift-access` contains `darleya`.
-- No cluster-admin binding was applied; OpenShift OAuth was not modified.
+On October 16, 2026, the binding `dastor-cluster-admins-from-keycloak` was
+created on RDG. Membership was then read directly from Keycloak's exact
+`/openshift-access/cluster-admins` subgroup and synchronized into the OpenShift
+`cluster-admins` group. Verified members:
 
-**Nested-group limitation:** Keycloak 26.4's default group listing omits the
-`subGroups` array even though a separate children request returns `cluster-admins`.
-The catalog operator's 0.0.36 Keycloak provider follows only the nested groups
-present in that listing. Consequently, `scope: sub` is configured but the nested
-`cluster-admins` group was not synchronized. The top-level group synchronization
-is verified; nested synchronization requires a provider compatibility fix or a
-separately agreed group layout. Do not assume the success condition covers nested
-groups, and do not restructure live Keycloak groups solely to hide this limitation.
+- bryan.durr
+- darleya
+- ian.durr
+- matt.brown
+- matt.mullaly
 
-Repository files and Applications were prepared alongside the manual deployment.
-The manual deployment did not register the Applications in Argo CD.
+The list above is an observation, not a declarative membership list. Keycloak
+remains the source of truth; credentials and member lists are not embedded in
+manifests. OpenShift OAuth is configured separately.
+
+## Synchronizing the nested admin group
+
+Keycloak's default group listing omits the `subGroups` array. Operator 0.0.36
+reports success for `openshift-access` but does not discover its nested
+`cluster-admins` group. Its 15-minute schedule does **not** maintain admin-group
+membership. This limitation remains; no automated replacement has been deployed.
+
+Until the provider supports the children endpoint, run the helper whenever admin
+membership changes. It uses the existing read-only synchronization account,
+verifies TLS, resolves the exact parent and child paths, reads every page of
+members, and replaces the OpenShift membership, including removals. A failed
+Keycloak read leaves membership unchanged. A resource-version precondition rejects
+concurrent OpenShift updates. The OpenShift group must already exist.
+
+Preview changes:
+
+```sh
+python3 components/ocp-keycloak-groupsync-4.20/scripts/sync-cluster-admins.py \
+  --context default/api-dstr-rdg-opnsft-dastorllc-com:6443/kube:admin
+```
+
+Apply and verify:
+
+```sh
+python3 components/ocp-keycloak-groupsync-4.20/scripts/sync-cluster-admins.py \
+  --context default/api-dstr-rdg-opnsft-dastorllc-com:6443/kube:admin --apply
+```
+
+The binding is now maintained in the repository. Apply the instance Kustomization
+through the existing deployment process to reconcile it. No Argo CD Applications
+were registered by the membership helper.

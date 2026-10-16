@@ -50,9 +50,9 @@ Update the GroupSync metadata annotation to request reconciliation:
 oc annotate groupsync dastor-keycloak-groupsync -n group-sync-operator reconcile-now="$(date +%s)" --overwrite
 ```
 
-This affects synchronization only. It does not enable OpenShift login or grant
-cluster roles. Review `30-cluster-admin-binding.yaml` separately if administrator
-access is explicitly required.
+This triggers the existing provider only; it does not fix nested-group discovery.
+The instance Kustomization now includes the authorized `cluster-admins` role
+binding, but the nested membership requires the helper below.
 
 ## Observed nested-group behavior on DaSTOR
 
@@ -61,3 +61,12 @@ On October 16, 2026, the provider synchronized `openshift-access` with member
 zero populated subgroups while the parent's children endpoint returns
 `cluster-admins`. Operator 0.0.36 therefore reports success for the parent while
 omitting the nested group. This is not an authentication or TLS failure.
+
+## RDG admin membership workaround
+
+On October 16, 2026, the authorized cluster-admin binding was applied and the
+nested admin group was synchronized using `scripts/sync-cluster-admins.py`.
+Run it with `--context <rdg-context>` to preview and add `--apply` to synchronize.
+It fetches the exact Keycloak child group and all member pages before updating
+OpenShift, including membership removals. It is a manual workaround; the existing
+operator schedule still updates only the parent group. See README.md for commands.
